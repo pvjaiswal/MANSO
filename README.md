@@ -21,13 +21,13 @@ MANSO is a multistart algorithm to identify all local minima
 		pip install numpy
 		pip install scipy
 	
-    Qiskit for QAOA:
-    	pip install qiskit
+    	Qiskit for QAOA:
+    		pip install qiskit
 
-	scikit-quant ?for Snobfit and Bobyqa
-    	python -m pip install scikit-quant ?
+	scikit-quant for Snobfit and Bobyqa
+    		python -m pip install scikit-quant ?
 
-	pdfo 
+	PDFO 
 		pip install pdfo
 	
 
@@ -39,11 +39,11 @@ MANSO is a multistart algorithm to identify all local minima
 
 4. Run MANSO from the command prompt
 
-python MANSO.py --help
+		python MANSO.py --help
 
 Example:
 To find local optima of Branin function use
 
-python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 15000 -OB 500 -d 2 -P Branin -seed 12 -lso ASTRODF
+		python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 15000 -OB 500 -d 2 -P Branin -seed 12 -lso ASTRODF
 
 
