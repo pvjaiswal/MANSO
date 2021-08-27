@@ -37,7 +37,7 @@ MANSO is a multistart algorithm to identify all local minima
 
 		python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 15000 -OB 500 -d 2 -P Branin -seed 12 -lso ASTRODF
 
-## To plot data profiles use Performance_Test.ipynb
+### To plot data profiles use Performance_Test.ipynb
 
 
 
