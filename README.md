@@ -15,37 +15,29 @@ MANSO is a multistart algorithm to identify all local minima
 		source activate py37
 
 2. Install the following 
-	
-	Numpy and Scipy
+	Numpy,Scipy,qiskit(if run QAOA), scikit-quant(Snobfit and Bobyqa)
 	
 		pip install numpy
 		pip install scipy
-	
-    	Qiskit for QAOA:
-	
-    		pip install qiskit
+		pip install qiskit
+		python -m pip install scikit-quant
 
-	scikit-quant for Snobfit and Bobyqa
-	
-    		python -m pip install scikit-quant
-
-	PDFO 
-		pip install pdfo
-	
-
-3. Require MATLAB engine to use ASTRODF (implemented in MATLAB) from Python (<= 3.7)
+3. Require MATLAB engine to use ASTRODF (https://github.com/simopt-admin/simopt/wiki) from Python (<= 3.7)
 
 	(Tested on MATLABR2020a)
+	
 	https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 		
 
-4. Run MANSO from the command prompt
+## Run MANSO from the command prompt
 
-		python MANSO.py --help
+1. Help: python MANSO.py --help
 
-Example:
-To find local optima of Branin function use
+2. Example: To find local optima of Branin function (https://www.sfu.ca/~ssurjano/branin.html) use
 
 		python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 15000 -OB 500 -d 2 -P Branin -seed 12 -lso ASTRODF
+
+## To plot data profiles use Performance_Test.ipynb
+
 
 
