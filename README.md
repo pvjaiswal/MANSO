@@ -22,10 +22,12 @@ MANSO is a multistart algorithm to identify all local minima
 		pip install scipy
 	
     	Qiskit for QAOA:
+	
     		pip install qiskit
 
 	scikit-quant for Snobfit and Bobyqa
-    		python -m pip install scikit-quant ?
+	
+    		python -m pip install scikit-quant
 
 	PDFO 
 		pip install pdfo
