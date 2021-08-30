@@ -57,8 +57,6 @@ class SaneFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelp
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='MANSO',
                                      formatter_class=SaneFormatter)
-    #parser.add_argument("-m", "--events", dest="EVENTS", type=str, required=True,
-    #                    default=[], nargs='+', help="Array of number of events")
     parser.add_argument("-b", "--Beta", dest="BETA", type=float,
                         default=0.1, help="S1-Table 1-Confidence")
     parser.add_argument("-t", "--Boundary", dest="TAU", type=float,
@@ -139,9 +137,6 @@ def ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO):
         xval = [getattr(eng1, Problem)(matlab.double(x.tolist()), 1, 0, 1, nargout=1) for ct in range(Nx)]
     else:
         xval = [getattr(objectives, Problem)(x) for ct in range(Nx)]
-    # xval=
-    ## The above step is inefficient as I am sampling values again at the same point.
-    # We can always pass the values to this function
     xval = np.array(xval, dtype="float")
     vol = np.prod(np.subtract(UB, LB))
     sigma = 5
@@ -236,8 +231,6 @@ for seed in range(1):
     x1 = xunif(LB, UB)
     MANSOP = [x1]
     S = [x1]
-    # Matrix of n_0 stochastic function values at each sampled point #[shekel(S[k],n0)]
-    # globals()[Problem]
     if LSO == "ASTRODF":
         funVAL = [getattr(eng1, Problem)(matlab.double(S[k].tolist()), 1, 0, 1, nargout=1) for ct in range(n0)]
     else:
