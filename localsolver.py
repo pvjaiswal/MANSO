@@ -10,13 +10,7 @@ import sys
 import objectives
 import PointsGL
 import matlab.engine
-
-# from pdfo import pdfo
-
 from skquant.opt import minimize
-
-# import matlab.engine
-
 
 def LSS(x, leng):
     from scipy import optimize
@@ -54,10 +48,6 @@ def Bobyqa(x, leng, Problem, bounds):
     history = np.array(PointsGL.Points)
     sort = np.flip(np.argsort(np.transpose(history)[0]))
     Output = {"Points": history[:, np.linspace(1, len(x), len(x)).astype(int)][sort], "Values": history[:, 0][sort], "Counts": [[1]] * len(history[:, 0][sort])}
-    # hist=np.array(PointsGL.Points)
-    # sort1=np.flip(np.argsort(np.transpose(hist)[0]))
-    # point=hist[:,np.linspace(1,len(x),len(x)).astype(int)][sort1]
-    # print(hist,history)
     return Output
 
 

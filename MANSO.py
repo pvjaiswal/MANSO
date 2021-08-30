@@ -120,8 +120,6 @@ def Nearoptima(x, Xstar, omega):
 
 
 def Nearbdry(x, LB, UB, tau):
-    # x = np.array(x)
-    # x[range(len(x))]+=tau
     for i in range(len(LB)):
         if x[i] < LB[i] + tau or x[i] > UB[i] - tau:
             return True
@@ -131,8 +129,6 @@ def Nearbdry(x, LB, UB, tau):
 def ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO):
     Nx = int(N[0])  # int(np.max(N))
     d = len(LB)
-    # print(matlab.double(x.tolist()))
-    # Fun=getattr(foo,Problem)
     if LSO == "ASTRODF":
         xval = [getattr(eng1, Problem)(matlab.double(x.tolist()), 1, 0, 1, nargout=1) for ct in range(Nx)]
     else:
@@ -141,7 +137,6 @@ def ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO):
     vol = np.prod(np.subtract(UB, LB))
     sigma = 5
     M = len(S)
-    # ((1/d)**2)*
     rk = 1 / (np.pi) ** (0.5) * (math.gamma(1 + d / 2) * vol * sigma * math.log(M) / M) ** (1 / d)
     # print(rk)
     for i in range(M):
