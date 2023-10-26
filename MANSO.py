@@ -45,7 +45,9 @@ To install dependencies
 
 4. To run MANSO from command prompt
 
-python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 15000 -OB 500 -d 2 -P Branin -seed 12 -lso ASTRODF
+python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 15000 -OB 500 -d 2 -P Branin -seed 12 -lso ASTRODF -stv 1
+
+python MANSO.py -b 0.1 -t 0.01 -o 0.01 -n 5 -B 150 -OB 5 -d 2 -P Branin -seed 12 -lso ASTRODF -stv 1
 
 """
 
@@ -75,6 +77,7 @@ if __name__ == "__main__":
                         default=5, help="Dimension of the problem")
     parser.add_argument("-seed", "--Seed", dest="SEED", type=int, default=5, help="Seed")
     parser.add_argument("-lso", "--Solver", dest="LSO", type=str, default="Bobyqa", help="Snobfit or Bobyqa or ASTRODF or PDFOO")
+    parser.add_argument("-stv", "--Stddev", dest="STDDEV", type=int, default=0, help="a binary variable to set using heterogeneous variance")
     args = parser.parse_args()
 
 
@@ -87,6 +90,7 @@ d = args.DIM
 Path = os.getcwd()
 Inp = args.SEED
 LSO = args.LSO
+stddev=args.STDDEV
 
 if Problem == "Branin":
     LB = [-5, 0]
@@ -126,11 +130,11 @@ def Nearbdry(x, LB, UB, tau):
     return False
 
 
-def ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO):
+def ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO, stddev):
     Nx = int(N[0])  # int(np.max(N))
     d = len(LB)
     if LSO == "ASTRODF":
-        xval = [getattr(eng1, Problem)(matlab.double(x.tolist()), 1, 0, 1, nargout=1) for ct in range(Nx)]
+        xval = [getattr(eng1, Problem)(matlab.double(x.tolist()), 1, 0, 1, stddev, nargout=1) for ct in range(Nx)]
     else:
         xval = [getattr(objectives, Problem)(x) for ct in range(Nx)]
     xval = np.array(xval, dtype="float")
@@ -150,7 +154,7 @@ def ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO):
     return False
 
 
-def LSSconditions(x, beta, S, L, A, k, N, funVAL, LB, UB, omega, tau, Xstar, Problem, LSO):
+def LSSconditions(x, beta, S, L, A, k, N, funVAL, LB, UB, omega, tau, Xstar, Problem, LSO,stddev):
     global v
     d = len(LB)
     if any((a == x).all() for a in A):
@@ -159,7 +163,7 @@ def LSSconditions(x, beta, S, L, A, k, N, funVAL, LB, UB, omega, tau, Xstar, Pro
         return False
     elif Nearbdry(x, LB, UB, tau):
         return False
-    elif ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO):
+    elif ProbBetter(x, k, beta, S, N, funVAL, LB, UB, Problem, LSO, stddev):
         v = v + 1
         return False
     else:
@@ -227,7 +231,7 @@ for seed in range(1):
     MANSOP = [x1]
     S = [x1]
     if LSO == "ASTRODF":
-        funVAL = [getattr(eng1, Problem)(matlab.double(S[k].tolist()), 1, 0, 1, nargout=1) for ct in range(n0)]
+        funVAL = [getattr(eng1, Problem)(matlab.double(S[k].tolist()), 1, 0, 1, stddev, nargout=1) for ct in range(n0)]
     else:
         funVAL = [getattr(objectives, Problem)(S[k]) for ct in range(n0)]
     Budget -= n0
@@ -244,7 +248,7 @@ for seed in range(1):
             if not any((a == 1 or a == 2).all() for a in A[it]):
                 leng = len(L[it])
                 if LSO == "ASTRODF":
-                    Output = getattr(localsolver, LSO)(L[it][leng - 1], OptimBudget, Problem, np.transpose([LB, UB]), eng)
+                    Output = getattr(localsolver, LSO)(L[it][leng - 1], OptimBudget, Problem, np.transpose([LB, UB]), stddev, eng)
                 else:
                     Output = getattr(localsolver, LSO)(L[it][leng - 1], OptimBudget, Problem, np.transpose([LB, UB]))
                 Result = Output["Points"]
@@ -272,13 +276,13 @@ for seed in range(1):
             S.append(x1)  # Appending uniformly sampled point to S.
             count.append(0)
             if LSO == "ASTRODF":
-                funVAL.append([getattr(eng1, Problem)(matlab.double(S[k].tolist()), 1, 0, 1, nargout=1) for ct in range(n0)])
+                funVAL.append([getattr(eng1, Problem)(matlab.double(S[k].tolist()), 1, 0, 1, stddev, nargout=1) for ct in range(n0)])
             else:
                 funVAL.append([getattr(objectives, Problem)(S[k]) for ct in range(n0)])
             Budget -= n0
             N.append(n0)  # Appending number of stochastic samples
             for p in range(len(S)):
-                if LSSconditions(S[p], beta, S, L, A, k, N, funVAL, LB, UB, omega, tau, Xstar, Problem, LSO) and count[p] == 0:  # checking our LSO starting conditions.
+                if LSSconditions(S[p], beta, S, L, A, k, N, funVAL, LB, UB, omega, tau, Xstar, Problem, LSO,stddev) and count[p] == 0:  # checking our LSO starting conditions.
                     A.append(S[p])  # appending to active search sampled points
                     count[p] = 1
                     active = active + 1

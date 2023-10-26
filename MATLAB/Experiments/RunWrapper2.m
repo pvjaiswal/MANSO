@@ -1,4 +1,4 @@
-function [SolnMatrix,FnMeanVal,FnCount]=RunWrapper2(problemnameArray, solvernameArray,xini, repsAlg,Budget)
+function [SolnMatrix,FnMeanVal,FnCount]=RunWrapper2(problemnameArray, solvernameArray,xini, repsAlg,Budget,stddev)
 % Run multiple algorithms on multiple problems and write the solutions
 % visited, objective function means and variances to .mat files for 
 % each algorithm-problem pair.
@@ -14,7 +14,7 @@ function [SolnMatrix,FnMeanVal,FnCount]=RunWrapper2(problemnameArray, solvername
 %   *************************************************************
 repsAlg=repsAlg(1);
 Budget=str2double(Budget{1});
-
+stddev=str2double(stddev{1});
 % Check if number of macroreplications is an integer
 if (repsAlg <= 0) || (mod(repsAlg,1) ~= 0)
     disp('The number of macroreplications (repsAlg) must be a positive integer.')
@@ -95,7 +95,7 @@ for k1 = 1:length(problemnameArray)
                         
             % Run the solver on the problem and return the solutions (and
             % obj fn mean and variance) whenever the recommended solution changes
-            [Ancalls_cell{j}, A_cell{j}, AFnMean_cell{j}, AFnVar_cell{j}, ~, ~, ~, ~, ~, ~,ptdict] = solverHandle(probHandle, probstructHandle,xini,Budget, problemRng, solverRng);
+            [Ancalls_cell{j}, A_cell{j}, AFnMean_cell{j}, AFnVar_cell{j}, ~, ~, ~, ~, ~, ~,ptdict] = solverHandle(probHandle, probstructHandle,xini,Budget, problemRng, solverRng,stddev);
             
             % Append macroreplication number to reporting of budget points
             

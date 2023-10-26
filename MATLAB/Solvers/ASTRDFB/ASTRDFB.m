@@ -62,7 +62,7 @@
 %% ASTRO-DF
 function [Ancalls, Asoln, Afn, AFnVar, AFnGrad, AFnGradCov, ...
     Aconstraint, AConstraintCov, AConstraintGrad, AConstraintGradCov,ptdict] ...
-    = ASTRDFB(probHandle, probstructHandle,xinit ,Budget, problemRng, solverRng)
+    = ASTRDFB(probHandle, probstructHandle,xinit ,Budget, problemRng, solverRng,stddev)
 
     %% Unreported
     AFnGrad = NaN;
@@ -128,7 +128,7 @@ function [Ancalls, Asoln, Afn, AFnVar, AFnGrad, AFnGradCov, ...
       
          [End,callcounti, x_pointsi, func_pointsi, var_pointsi, ptdict]= ASTRDF_Internal(...
             probHandle, problemRng, solverRng, minmax, dim, VarBds, x0, ...
-            floor(setupprct*budgetmaxPT), type, Delta1(i), Delta_max, ptdict, 1, 0,Start);        
+            floor(setupprct*budgetmaxPT), type, Delta1(i), Delta_max, ptdict, 1, 0,Start,stddev);        
         tim=toc;
         infoi=ptdict.info;
         ptdict=rmfield(ptdict,'info'); %only save the points
@@ -187,7 +187,7 @@ function [Ancalls, Asoln, Afn, AFnVar, AFnGrad, AFnGradCov, ...
     end
     %run the main algorithm
     [End,callcount, x_points, func_points, var_points,ptdict]= ASTRDF_Internal(probHandle,...
-        problemRng, solverRng, minmax, dim, VarBds, x_aft_tune, budgetmaxPT-3*floor(setupprct*budgetmaxPT), type, Delta, Delta_max, ptdict, 0, BestS,Start);
+        problemRng, solverRng, minmax, dim, VarBds, x_aft_tune, budgetmaxPT-3*floor(setupprct*budgetmaxPT), type, Delta, Delta_max, ptdict, 0, BestS,Start,stddev);
     callcount = callcount+3*floor(setupprct*budgetmaxPT);
     tim=toc;
     %fprintf('End of Stage 3- Number of calls made %d, Time duration %f \n\n',callcount(end),End-Start);
@@ -206,7 +206,7 @@ end
 
 function [End,callcount, x_points, func_points, var_points, ptdict] ...
     = ASTRDF_Internal(probHandle, problemRng, solverRng, ...
-        minmax, dim, VarBds, xk, budgetmax, type, Delta0, Delta_max, ptdict, PT, BestS,Start)
+        minmax, dim, VarBds, xk, budgetmax, type, Delta0, Delta_max, ptdict, PT, BestS,Start,stddev)
 %ASTRDF_Internal runs the main portion of the ASTRO-DF Algorithm
 %
 %   INPUTS
@@ -316,7 +316,7 @@ function [End,callcount, x_points, func_points, var_points, ptdict] ...
         end
         %run the adaptive sampling part of the algorithm
         [q, Fbar, Fvar, Deltak, calls, ptdict, budgetmax] = Model_Construction(probHandle, xk, Delta, iteration_number, ...
-            type, w, mu, beta, calls, solverInternalRng, problemRng, minmax, ptdict, VarBds,lin_quad,budgetmax, PT, BestS);
+            type, w, mu, beta, calls, solverInternalRng, problemRng, minmax, ptdict, VarBds,lin_quad,budgetmax, PT, BestS,stddev);
         End=toc;
         %tim = toc-tim;
         %fprintf('Model construction time %f \n',End-Start);
@@ -389,7 +389,7 @@ function [End,callcount, x_points, func_points, var_points, ptdict] ...
                 end
                 samplecounts = samplecounts + 1;
             end
-            [xi, ~, ~, ~, ~, ~, ~, ~] = probHandle(x_tilde, 1, problemRng, problemseed);
+            [xi, ~, ~, ~, ~, ~, ~, ~] = probHandle(x_tilde, 1, problemRng, problemseed,stddev);
             xi = -minmax*xi; % Account for minimization/maximization 
             problemseed = problemseed + 1; % iid observations
             calls = calls + 1;
@@ -509,7 +509,7 @@ function [End,callcount, x_points, func_points, var_points, ptdict] ...
 end
 
 function [q, Fbar, Fvar, Deltak, calls, ptdict, budgetmax] = Model_Construction(probHandle, x, Delta, k, type, ...
-    w, mu, beta, calls, solverInternalRng, problemRng, minmax, ptdict,VarBds,lin_quad, budgetmax, PT, BestS)
+    w, mu, beta, calls, solverInternalRng, problemRng, minmax, ptdict,VarBds,lin_quad, budgetmax, PT, BestS,stddev)
 %Model_Construction creates a model in the trust region
 %
 %   INPUTS
@@ -632,7 +632,7 @@ function [q, Fbar, Fvar, Deltak, calls, ptdict, budgetmax] = Model_Construction(
                     ks = ks + 1;
                 end
 
-                [xi, ~, ~, ~, ~, ~, ~, ~] = probHandle(Y(i,:), 1, problemRng, problemseed);
+                [xi, ~, ~, ~, ~, ~, ~, ~] = probHandle(Y(i,:), 1, problemRng, problemseed,stddev);
                 xi = -minmax*xi; % Account for minimization/maximization
                 problemseed = problemseed + 1; % iid observations  
                 calls = calls + 1;

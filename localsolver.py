@@ -35,8 +35,8 @@ def LSS2(x, leng):
 
 
 ## To call ASTRO-DF from python
-def ASTRODF(x, leng, Problem, bounds, eng):
-    Result = eng.RunWrapper2([Problem], ["ASTRDFB"], matlab.double(x.tolist()), matlab.int64([1]), [str(leng)], nargout=3)
+def ASTRODF(x, leng, Problem, bounds, stddev, eng):
+    Result = eng.RunWrapper2([Problem], ["ASTRDFB"], matlab.double(x.tolist()), matlab.int64([1]), [str(leng)],[str(stddev)], nargout=3)
     sort = np.flip(np.argsort(np.transpose(np.array(Result[1])[1:]))) + 1
     Output = {"Points": np.array(Result[0])[sort][0], "Values": (np.array(Result[1])[sort][0]), "Counts": (np.array(Result[2])[sort][0])}
     return Output

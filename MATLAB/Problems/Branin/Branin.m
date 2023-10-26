@@ -1,10 +1,12 @@
-function [fn, FnVar, FnGrad, FnGradCov, constraint, ConstraintCov, ConstraintGrad, ConstraintGradCov] = Branin(x, runlength, problemRng, seed)
+function [fn, FnVar, FnGrad, FnGradCov, constraint, ConstraintCov, ConstraintGrad, ConstraintGradCov] = Branin(x, runlength, problemRng, seed, stddev)
 
 % INPUTS
 % x: a column vector equaling the decision variables theta
 % runlength: the number of longest paths to simulate
 % problemRng: a cell array of RNG streams for the simulation model 
 % seed: the index of the first substream to use (integer >= 1)
+% stddev: a binary variable to set use of heterogeneous variance (0.005 X
+% function value)
 
 % RETURNS
 % Estimated fn value
@@ -79,10 +81,19 @@ else % main simulation
         end
         
         % Generate random noise data
-        Noise = normrnd(0, 1,[1,3]);
         
         
-        cost(i) = (a * (x(2) - b * x(1)^ 2 + c * x(1) - r)^ 2 + s * (1 - t) * cos(x(1)) + s) + Noise(1);
+        
+        cost(i) = (a * (x(2) - b * x(1)^ 2 + c * x(1) - r)^ 2 + s * (1 - t) * cos(x(1)) + s);
+        
+        if stddev==1
+            std= sqrt(cost(i)*0.005);
+        else
+            std=1;
+        end
+        
+        Noise = normrnd(0, std,[1,3]);
+        cost(i) = cost(i) + Noise(1);
             
         g1 = 2*a*(x(2) - b * x(1)^2 + c * x(1) - r)*(-2* b * x(1) + c) - s*(1-t)*sin(x(1)) + Noise(2);  
         g2 = 2*a*(x(2) - b * x(1)^2 + c * x(1) - r) + Noise(3);
